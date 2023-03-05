@@ -7,7 +7,7 @@ import { widgets } from "./widgets";
 
 const program  = new Command();
 program.option("-v, --verbose", "verbose logging");
-program.description('Fling - a not so serious Farcaster client')
+program.description('Fling - a not-so serious Farcaster client')
 program.version('0.0.1');
 program.addCommand(widgets);
 
