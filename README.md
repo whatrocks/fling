@@ -1,2 +1,3 @@
 # fling
-nothing serious
+
+a not-so serious Farcaster client
