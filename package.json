@@ -1,0 +1,33 @@
+{
+  "name": "fling",
+  "version": "0.0.1",
+  "description": "a not-so serious Farcaster client for the terminal",
+  "author": "Charlie Harrington (@whatrocks)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whatrocks/fling.git"
+  },
+  "dependencies": {
+    "commander": "^10.0.0",
+    "ora": "^6.1.2"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "build": "tsc --noEmit ./index.ts && esbuild index.ts --bundle --platform=node --format=cjs --outfile=dist/index.js"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "bin": {
+    "fling": "./dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.6",
+    "esbuild": "^0.17.11",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
+    "husky": "^8.0.3",
+    "prettier": "^2.8.4",
+    "typescript": "^4.9.5"
+  }
+}
