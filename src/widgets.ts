@@ -1,10 +1,5 @@
 import { Command } from 'commander';
-import {
-  spinnerError,
-  spinnerInfo,
-  spinnerSuccess,
-  updateSpinnerText,
-} from './spinner';
+import { spinnerSuccess, updateSpinnerText } from './spinner';
 
 export const widgets = new Command('widgets');
 
