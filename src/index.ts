@@ -72,9 +72,8 @@ async function getCasts() {
 
 async function sendCast(flingcast: string) {
   // check if today's cast exists
-  let todays_cast_exists = false;
-  const today = new Date();
-  console.log('today is : ', today);
+  const today_ts = new Date().getTime() / 1000;
+
   updateSpinnerText('Searching for user @' + FNAME);
   const user = await apiClient.lookupUserByUsername(FNAME);
   if (user === undefined) {
@@ -83,46 +82,48 @@ async function sendCast(flingcast: string) {
   spinnerSuccess();
   updateSpinnerText('Getting casts for user @' + FNAME);
 
-  let count = 0;
+  let should_stop_searching = false;
 
   for await (const cast of apiClient.fetchCastsForUser(user)) {
+    const current_cast = cast;
     spinnerSuccess();
-    console.log(cast);
-
-    // // check if same date
-    // const castDate = convertUnixTsToDate(cast.timestamp);
-    // const castIsToday = isSameDay(today, castDate);
-
-    if (cast.text[0] === FLING_SYMBOL) {
-      console.log('found');
-      todays_cast_exists = true;
-      await apiClient.publishCast(flingcast, cast);
-      break;
+    const dateComparison = compareDates(cast.timestamp / 1000, today_ts);
+    switch (dateComparison) {
+      case 'same date':
+        console.log('same date');
+        // same date and we already flung
+        if (current_cast.text[0] === FLING_SYMBOL) {
+          should_stop_searching = true;
+          console.log('found');
+          await apiClient.publishCast(flingcast, current_cast);
+          break;
+        }
+        break;
+      case 'before': // already past today's day, so we should post our first fling
+        should_stop_searching = true;
+        await apiClient.publishCast(`${FLING_STARTER}${flingcast}`);
+        break;
+      case 'after': // probably should never happen
+        break;
     }
 
-    count++;
-    if (count > 10) {
+    if (should_stop_searching) {
       break;
     }
   }
-  // if it does not, create it with the FLING_TEXT
-  if (!todays_cast_exists) {
-    console.log('i need to create todays cast');
-    const cast = `${FLING_STARTER}${flingcast}`;
-    await apiClient.publishCast(cast);
-  }
-  console.log('I am done');
 }
 
-// function convertUnixTsToDate(timestamp) {
-//   var date = new Date(timestamp * 1000);
-//   return date.toLocaleDateString('en-US');
-// }
+function compareDates(timestamp1: number, timestamp2: number): string {
+  const date1 = new Date(timestamp1 * 1000);
+  const date2 = new Date(timestamp2 * 1000);
 
-// function isSameDay(date1, date2) {
-//   return (
-//     date1.getFullYear() === date2.getFullYear() &&
-//     date1.getMonth() === date2.getMonth() &&
-//     date1.getDate() === date2.getDate()
-//   );
-// }
+  if (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  ) {
+    return 'same date';
+  }
+
+  return date1 < date2 ? 'before' : 'after';
+}
