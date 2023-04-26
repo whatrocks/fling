@@ -21,20 +21,18 @@ const FLING_STARTER = `${FLING_SYMBOL}\n`;
 // Commander.js setup
 const program = new Command();
 program.name('fling');
-program.description('⌆ Fling - how did your stuff go today?');
+program.description('⌆ Fling - how did your day go?');
 program.version('0.0.1');
-
-program
-  .command('it')
-  .description('Fling a message or two to remember your day')
-  .option('-m, --message <message>', 'message to cast')
-  .action(async (message) => {
-    if (!message.message) {
-      await getCasts();
-    } else {
-      await sendCast(message.message);
-    }
-  });
+program.option('-m, --message <message>', 'message to fling');
+program.action(async (message) => {
+  if (!message.message) {
+    console.log(
+      "You didn't provide a message to fling! Try running 'fling --help'!",
+    );
+  } else {
+    await sendCast(message.message);
+  }
+});
 
 process.on('unhandledRejection', function (err: Error) {
   const debug = program.opts().verbose;
@@ -51,24 +49,6 @@ async function main() {
 }
 
 main();
-
-async function getCasts() {
-  updateSpinnerText('Searching for user @' + FNAME);
-  const user = await apiClient.lookupUserByUsername(FNAME);
-  if (user === undefined) {
-    throw new Error('no user found');
-  }
-  spinnerSuccess();
-
-  updateSpinnerText('Getting casts for user @' + FNAME);
-  for await (const cast of apiClient.fetchCastsForUser(user)) {
-    spinnerSuccess();
-    console.table({
-      text: cast.text,
-    });
-    break;
-  }
-}
 
 async function sendCast(flingcast: string) {
   // check if today's cast exists
@@ -90,18 +70,20 @@ async function sendCast(flingcast: string) {
     const dateComparison = compareDates(cast.timestamp / 1000, today_ts);
     switch (dateComparison) {
       case 'same date':
-        console.log('same date');
         // same date and we already flung
         if (current_cast.text[0] === FLING_SYMBOL) {
           should_stop_searching = true;
-          console.log('found');
+          updateSpinnerText("Updating today's fling");
           await apiClient.publishCast(flingcast, current_cast);
+          spinnerSuccess();
           break;
         }
         break;
       case 'before': // already past today's day, so we should post our first fling
         should_stop_searching = true;
+        updateSpinnerText("Creating today's fling");
         await apiClient.publishCast(`${FLING_STARTER}${flingcast}`);
+        spinnerSuccess();
         break;
       case 'after': // probably should never happen
         break;
