@@ -4,6 +4,10 @@ fling (and retrieve) your daily logs with Farcaster. [Read more about the fling 
 
 ## Setup
 
+```bash
+npm install -g fling-cli
+```
+
 This is a demo CLI tool, do not expect perfection!
 
 For example, "signing in" to your Farcaster account is fairly hacky right now with this tool. Current implementation assumes two environment variables in your local shell: `MNEMONIC` and `FNAME`. 
