@@ -1,7 +1,7 @@
 {
   "name": "fling",
-  "version": "0.0.1",
-  "description": "a not-so serious Farcaster client for the terminal",
+  "version": "0.0.1-beta.1",
+  "description": "Your daily log using Farcaster",
   "author": "Charlie Harrington (@whatrocks)",
   "repository": {
     "type": "git",
