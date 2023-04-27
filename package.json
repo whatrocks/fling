@@ -16,7 +16,8 @@
   },
   "scripts": {
     "build": "tsc --noEmit ./src/index.ts && esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=dist/index.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release": "release-it"
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
@@ -40,6 +41,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2",
     "prettier": "^2.8.4",
+    "release-it": "^15.10.1",
     "typescript": "^4.9.5"
   }
 }
