@@ -10,6 +10,11 @@ import {
   stopSpinner,
 } from './spinner';
 
+// date setup
+const SAME_DATE = 'same date';
+const BEFORE = 'before';
+const AFTER = 'after';
+
 // Farcaster setup
 const mnemonic = process.env.MNEMONIC || '';
 const wallet = Wallet.fromMnemonic(mnemonic);
@@ -65,35 +70,42 @@ async function sendCast(flingcast: string) {
   updateSpinnerText('Getting casts for user @' + FNAME);
 
   let should_stop_searching = false;
+  let dateComparison = '';
 
   for await (const cast of apiClient.fetchCastsForUser(user)) {
     const current_cast = cast;
     spinnerSuccess();
-    const dateComparison = compareDates(cast.timestamp / 1000, today_ts);
+    dateComparison = compareDates(cast.timestamp / 1000, today_ts);
     switch (dateComparison) {
-      case 'same date':
+      case SAME_DATE:
         // same date and we already flung
         if (current_cast.text[0] === FLING_SYMBOL) {
           should_stop_searching = true;
           updateSpinnerText("Updating today's fling");
           await apiClient.publishCast(flingcast, current_cast);
           spinnerSuccess();
-          break;
         }
         break;
-      case 'before': // already past today's day, so we should post our first fling
+      case BEFORE: // already past today's day, so we should post our first fling
         should_stop_searching = true;
         updateSpinnerText("Creating today's fling");
         await apiClient.publishCast(`${FLING_STARTER}${flingcast}`);
         spinnerSuccess();
         break;
-      case 'after': // probably should never happen
+      case AFTER: // probably should never happen
+        console.log('after');
         break;
     }
 
     if (should_stop_searching) {
       break;
     }
+  }
+  // handle case where newly created account tries to fling on their first day
+  if (!should_stop_searching && dateComparison === SAME_DATE) {
+    updateSpinnerText("Creating today's fling");
+    await apiClient.publishCast(`${FLING_STARTER}${flingcast}`);
+    spinnerSuccess();
   }
 }
 
@@ -106,8 +118,8 @@ function compareDates(timestamp1: number, timestamp2: number): string {
     date1.getMonth() === date2.getMonth() &&
     date1.getDate() === date2.getDate()
   ) {
-    return 'same date';
+    return SAME_DATE;
   }
 
-  return date1 < date2 ? 'before' : 'after';
+  return date1 < date2 ? BEFORE : AFTER;
 }
