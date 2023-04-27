@@ -40,3 +40,10 @@ $ fling -m $'* cli pushed to npm\n* sent proposal to first beta testers'
 ```
 
 That's it! Your flings should show up in any Farcaster client, or you can try specific clients tuned just for the fling pattern, such as [this demo web client](https://whatrocks.github.io/fling-web).
+
+
+## Updating NPM package
+
+```bash
+npm run release
+```
