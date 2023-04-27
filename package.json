@@ -1,6 +1,6 @@
 {
   "name": "fling-cli",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1",
   "description": "Your daily log using Farcaster",
   "author": "Charlie Harrington (@whatrocks)",
   "repository": {
