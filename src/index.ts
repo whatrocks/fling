@@ -29,6 +29,8 @@ program.action(async (message) => {
     console.log(
       "You didn't provide a message to fling! Try running 'fling --help'!",
     );
+  } else if (message.message.length > 315) {
+    console.log('Your message is too long! Try again with a shorter message!');
   } else {
     await sendCast(message.message);
   }
