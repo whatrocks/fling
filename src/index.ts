@@ -27,7 +27,7 @@ const FLING_STARTER = `${FLING_SYMBOL}\n`;
 const program = new Command();
 program.name('fling');
 program.description('⌆ fling - how did your day go?');
-program.version('0.0.7');
+program.version('0.0.8');
 program.option('-m, --message <message>', 'message to fling');
 program.action(async (message) => {
   if (!message.message) {
